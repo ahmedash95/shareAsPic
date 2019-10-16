@@ -42,13 +42,6 @@ func main() {
 	// initialize logger
 	initLogger()
 
-	_, err3 := TweetScreenShot("ahmedash95", "1183478346941980678")
-	if err3 != nil {
-		log.Fatal(err3)
-	}
-
-	return
-
 	for {
 		// start streaming
 		search, _, err := client.Search.Tweets(&twitter.SearchTweetParams{
@@ -177,5 +170,5 @@ func makeTweetPicAndShare(tweet twitter.Tweet) {
 }
 
 func makeURL(s string) string {
-	return fmt.Sprintf("%s/%s", PIC_STORAGE_URL, s)
+	return fmt.Sprintf("%s%s", PIC_STORAGE_URL, s)
 }

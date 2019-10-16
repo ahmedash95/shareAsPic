@@ -2,4 +2,4 @@ redis-data
 .idea/
 pics/
 .env
-app.og
+app.log
