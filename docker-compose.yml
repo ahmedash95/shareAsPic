@@ -1,0 +1,21 @@
+version: '3'
+
+services:
+  web_api:
+    build:
+      context: .
+      dockerfile: Dockerfile
+    command: /bin/bash -c "go run *.go"
+    volumes:
+      - ./:/go/src/github.com/ahmedash95/shareAsPic
+    ports:
+      - "8080:8080"
+    depends_on:
+      - redis
+
+  redis:
+    image: redis
+    volumes:
+      - ./redis-data:/data
+    ports:
+      - "6381:6379"
