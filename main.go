@@ -130,16 +130,13 @@ func replyWithIDoNotUnderstand(tweet twitter.Tweet) {
 		MediaIds:           nil,
 		TweetMode:          "",
 	}
-	_, _, err := client.Statuses.Update(fmt.Sprintf("Hello @%s , Sorry but I do not understand your message!", tweet.User.ScreenName), statusUpdate)
-	if err != nil {
-		Logger.Error(fmt.Sprintf("Faild to reply with do not understand, %s", err.Error()))
-	}
+	client.Statuses.Update(fmt.Sprintf("Hello @%s , Sorry but I do not understand your message!", tweet.User.ScreenName), statusUpdate)
 }
 
 func makeTweetPicAndShare(tweet twitter.Tweet) {
 	log.Printf("replyWithScreenShotFor: %s\n", tweet.IDStr)
 
-	filename, err := TweetScreenShot(tweet.User.ScreenName, tweet.IDStr)
+	filename, err := TweetScreenShot(tweet.InReplyToScreenName, tweet.InReplyToStatusIDStr)
 	if err != nil {
 		log.Fatal(err)
 		Logger.Error(fmt.Sprintf("Faild to take a screenshot of the tweet, %s", err.Error()))
