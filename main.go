@@ -1,7 +1,6 @@
 package main
 
 import (
-	"fmt"
 	"log"
 	"os"
 
@@ -29,17 +28,19 @@ func main() {
 	PIC_STORAGE_PATH = os.Getenv("PIC_STORAGE_PATH")
 	PIC_STORAGE_URL = os.Getenv("PIC_STORAGE_URL")
 
-	// init chrome client for screenshots
-	initChromedpClient()
-	// initialize twitter configuration for streaming
-	initTwitterClient()
-	// initialize redis client
-	initRedisClient()
 	// initialize logger
 	initLogger()
+	// init chrome client for screenshots
+	logAndPring("Init Chrome")
+	initChromedpClient()
+	// initialize twitter configuration for streaming
+	logAndPring("Init Twitter client")
+	initTwitterClient()
+	// initialize redis client
+	logAndPring("Init redis")
+	initRedisClient()
 
-	Logger.Info("App starts: Waiting for tweets")
-	fmt.Println("Listening for tweets")
+	logAndPring("App starts: Waiting for tweets")
 
 	demux := twitter.NewSwitchDemux()
 	demux.Tweet = func(tweet *twitter.Tweet) {

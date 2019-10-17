@@ -95,6 +95,8 @@ func makeTweetPicAndShare(tweet twitter.Tweet) {
 		TweetMode:          "",
 	}
 
+	logAndPring(fmt.Sprintf("replying to %s (%s) for reply to %s/status/%s", tweet.User.ScreenName, tweet.IDStr, tweet.InReplyToScreenName, tweet.InReplyToStatusIDStr))
+
 	filename = fmt.Sprintf("%s%s", PIC_STORAGE_URL, filename)
 
 	_, _, err2 := client.Statuses.Update(fmt.Sprintf("Hello @%s , Here you are %s", tweet.User.ScreenName, filename), statusUpdate)
