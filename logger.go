@@ -1,25 +1,31 @@
 package main
 
 import (
-	"os"
+	"fmt"
 
 	"go.uber.org/zap"
 	"go.uber.org/zap/zapcore"
+	"gopkg.in/natefinch/lumberjack.v2"
 )
 
 var Logger *zap.Logger
 
 func initLogger() {
-	writerSyncer := getLogWriter()
-	encoder := getEncoder()
-	core := zapcore.NewCore(encoder, writerSyncer, zapcore.DebugLevel)
+	w := zapcore.AddSync(&lumberjack.Logger{
+		Filename:   "./app.log",
+		MaxSize:    500, // megabytes
+		MaxBackups: 3,
+		MaxAge:     28, // days
+	})
+	core := zapcore.NewCore(
+		zapcore.NewJSONEncoder(zap.NewProductionEncoderConfig()),
+		w,
+		zap.InfoLevel,
+	)
 	Logger = zap.New(core)
 }
-func getEncoder() zapcore.Encoder {
-	return zapcore.NewJSONEncoder(zap.NewProductionEncoderConfig())
-}
 
-func getLogWriter() zapcore.WriteSyncer {
-	file, _ := os.Create("./app.log")
-	return zapcore.AddSync(file)
+func logAndPring(msg string) {
+	fmt.Println(msg)
+	Logger.Info(msg)
 }
