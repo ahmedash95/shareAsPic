@@ -22,7 +22,7 @@ func initTwitterClient() {
 
 func processTweet(tweet twitter.Tweet) {
 	if tweetProcessedBefore(tweet) {
-		logAndPring(fmt.Sprintf("Tweet proccessed before %s/status/%s",tweet.InReplyToScreenName,tweet.InReplyToStatusIDStr))
+		logAndPring(fmt.Sprintf("Tweet proccessed before %s/status/%s", tweet.InReplyToScreenName, tweet.InReplyToStatusIDStr))
 		return
 	}
 	// let's make sure it has "share this" in the string
@@ -62,9 +62,9 @@ func replyWithIDoNotUnderstand(tweet twitter.Tweet) {
 		MediaIds:           nil,
 		TweetMode:          "",
 	}
-	_,_, err := client.Statuses.Update(fmt.Sprintf("Hello @%s , Sorry but I do not understand your message!", tweet.User.ScreenName), statusUpdate)
+	_, _, err := client.Statuses.Update(fmt.Sprintf("Hello @%s , Sorry but I do not understand your message!", tweet.User.ScreenName), statusUpdate)
 	if err != nil {
-		logAndPring(fmt.Sprintf("faild to reply with do not understand message %s",err.Error()))
+		logAndPring(fmt.Sprintf("faild to reply with do not understand message %s", err.Error()))
 	}
 }
 
@@ -97,6 +97,6 @@ func makeTweetPicAndShare(tweet twitter.Tweet) {
 
 	_, _, err2 := client.Statuses.Update(fmt.Sprintf("Hello @%s , Here you are %s", tweet.User.ScreenName, filename), statusUpdate)
 	if err2 != nil {
-		logAndPring(fmt.Sprintf(("Faild to reply pic tweet, %s", err2.Error()))
+		logAndPring(fmt.Sprintf("Faild to reply pic tweet, %s", err2.Error()))
 	}
 }
