@@ -69,13 +69,15 @@ func replyWithIDoNotUnderstand(tweet twitter.Tweet) {
 }
 
 func makeTweetPicAndShare(tweet twitter.Tweet) {
-	logAndPring(fmt.Sprintf("replyWithScreenShotFor: %s\n", tweet.IDStr))
+	logAndPring(fmt.Sprintf("prepare replyWithScreenShotFor: %s\n", tweet.IDStr))
 
+	logAndPring("taking a screenshot")
 	filename, err := TweetScreenShot(tweet.InReplyToScreenName, tweet.InReplyToStatusIDStr)
 	if err != nil {
 		logAndPring(fmt.Sprintf("Faild to take a screenshot of the tweet, %s", err.Error()))
 		return
 	}
+	logAndPring("screenshot has been taken successfully")
 
 	// tweeting with photos is not yet supported in the tweeter sdk library
 	// so I'll use only url of the image to be part of the text :/
@@ -98,5 +100,8 @@ func makeTweetPicAndShare(tweet twitter.Tweet) {
 	_, _, err2 := client.Statuses.Update(fmt.Sprintf("Hello @%s , Here you are %s", tweet.User.ScreenName, filename), statusUpdate)
 	if err2 != nil {
 		logAndPring(fmt.Sprintf("Faild to reply pic tweet, %s", err2.Error()))
+		return
 	}
+
+	logAndPring(fmt.Sprintf("replied With screenshot for: %s\n", tweet.IDStr))
 }
