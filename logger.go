@@ -25,7 +25,7 @@ func initLogger() {
 	Logger = zap.New(core)
 }
 
-func logAndPring(msg string) {
+func logAndPrint(msg string) {
 	fmt.Println(msg)
 	Logger.Info(msg)
 }

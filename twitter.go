@@ -22,7 +22,7 @@ func initTwitterClient() {
 
 func processTweet(tweet twitter.Tweet) {
 	if tweetProcessedBefore(tweet) {
-		logAndPring(fmt.Sprintf("Tweet proccessed before %s/status/%s", tweet.InReplyToScreenName, tweet.InReplyToStatusIDStr))
+		logAndPrint(fmt.Sprintf("Tweet proccessed before %s/status/%s", tweet.InReplyToScreenName, tweet.InReplyToStatusIDStr))
 		return
 	}
 	// let's make sure it has "share this" in the string
@@ -64,22 +64,22 @@ func replyWithIDoNotUnderstand(tweet twitter.Tweet) {
 	}
 	_, _, err := client.Statuses.Update(fmt.Sprintf("Hello @%s , Sorry but I do not understand your message!", tweet.User.ScreenName), statusUpdate)
 	if err != nil {
-		logAndPring(fmt.Sprintf("faild to reply with do not understand message %s", err.Error()))
+		logAndPrint(fmt.Sprintf("faild to reply with do not understand message %s", err.Error()))
 	}
 }
 
 func makeTweetPicAndShare(tweet twitter.Tweet) {
-	logAndPring(fmt.Sprintf("prepare replyWithScreenShotFor: %s\n", tweet.IDStr))
+	logAndPrint(fmt.Sprintf("prepare replyWithScreenShotFor: %s\n", tweet.IDStr))
 
-	logAndPring("taking a screenshot")
+	logAndPrint("taking a screenshot")
 	filename, err := TweetScreenShot(tweet.InReplyToScreenName, tweet.InReplyToStatusIDStr)
 	if err != nil {
-		logAndPring(fmt.Sprintf("Faild to take a screenshot of the tweet, %s", err.Error()))
+		logAndPrint(fmt.Sprintf("Faild to take a screenshot of the tweet, %s", err.Error()))
 		return
 	}
-	logAndPring("screenshot has been taken successfully")
+	logAndPrint("screenshot has been taken successfully")
 
-	logAndPring(fmt.Sprintf("replying to %s (%s) for reply to %s/status/%s", tweet.User.ScreenName, tweet.IDStr, tweet.InReplyToScreenName, tweet.InReplyToStatusIDStr))
+	logAndPrint(fmt.Sprintf("replying to %s (%s) for reply to %s/status/%s", tweet.User.ScreenName, tweet.IDStr, tweet.InReplyToScreenName, tweet.InReplyToStatusIDStr))
 
 	filename = fmt.Sprintf("%s%s", PIC_STORAGE_URL, filename)
 
@@ -87,8 +87,8 @@ func makeTweetPicAndShare(tweet twitter.Tweet) {
 
 	err2 := TweetSendReply(tweet.User.ScreenName, tweet.IDStr, replyMessage)
 	if err2 != nil {
-		logAndPring(fmt.Sprintf("Faild to reply with a screenshot: %s", err2.Error()))
+		logAndPrint(fmt.Sprintf("Faild to reply with a screenshot: %s", err2.Error()))
 	}
 
-	logAndPring(fmt.Sprintf("replied With screenshot for: %s\n", tweet.IDStr))
+	logAndPrint(fmt.Sprintf("replied With screenshot for: %s\n", tweet.IDStr))
 }

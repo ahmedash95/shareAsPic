@@ -35,13 +35,13 @@ func main() {
 	// initialize logger
 	initLogger()
 	// initialize twitter configuration for streaming
-	logAndPring("Init Twitter client")
+	logAndPrint("Init Twitter client")
 	initTwitterClient()
 	// initialize redis client
-	logAndPring("Init redis")
+	logAndPrint("Init redis")
 	initRedisClient()
 
-	logAndPring("App starts: Waiting for tweets")
+	logAndPrint("App starts: Waiting for tweets")
 
 	demux := twitter.NewSwitchDemux()
 	demux.Tweet = func(tweet *twitter.Tweet) {
