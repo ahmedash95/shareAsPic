@@ -2,7 +2,7 @@ module github.com/ahmedash95/shareAsPic
 
 require (
 	github.com/cenkalti/backoff v2.2.1+incompatible // indirect
-	github.com/chromedp/cdproto v0.0.0-20191013005325-ffea6b31d538 // indirect
+	github.com/chromedp/cdproto v0.0.0-20191013005325-ffea6b31d538
 	github.com/chromedp/chromedp v0.5.0
 	github.com/dghubble/go-twitter v0.0.0-20190719072343-39e5462e111f
 	github.com/dghubble/oauth1 v0.6.0

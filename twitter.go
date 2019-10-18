@@ -79,30 +79,15 @@ func makeTweetPicAndShare(tweet twitter.Tweet) {
 	}
 	logAndPring("screenshot has been taken successfully")
 
-	// tweeting with photos is not yet supported in the tweeter sdk library
-	// so I'll use only url of the image to be part of the text :/
-
-	statusUpdate := &twitter.StatusUpdateParams{
-		Status:             "",
-		InReplyToStatusID:  tweet.ID,
-		PossiblySensitive:  nil,
-		Lat:                nil,
-		Long:               nil,
-		PlaceID:            "",
-		DisplayCoordinates: nil,
-		TrimUser:           nil,
-		MediaIds:           nil,
-		TweetMode:          "",
-	}
-
 	logAndPring(fmt.Sprintf("replying to %s (%s) for reply to %s/status/%s", tweet.User.ScreenName, tweet.IDStr, tweet.InReplyToScreenName, tweet.InReplyToStatusIDStr))
 
 	filename = fmt.Sprintf("%s%s", PIC_STORAGE_URL, filename)
 
-	_, _, err2 := client.Statuses.Update(fmt.Sprintf("Hello @%s , Here you are %s", tweet.User.ScreenName, filename), statusUpdate)
+	replyMessage := fmt.Sprintf("Hello @%s , Here you are %s", tweet.User.ScreenName, filename)
+
+	err2 := TweetSendReply(tweet.User.ScreenName, tweet.IDStr, replyMessage)
 	if err2 != nil {
-		logAndPring(fmt.Sprintf("Faild to reply pic tweet, %s", err2.Error()))
-		return
+		logAndPring(fmt.Sprintf("Faild to reply with a screenshot: %s", err2.Error()))
 	}
 
 	logAndPring(fmt.Sprintf("replied With screenshot for: %s\n", tweet.IDStr))
