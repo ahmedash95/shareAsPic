@@ -82,6 +82,7 @@ func replyToTweet(userScreen, tweetId, message, fileToUpload string, res *[]byte
 		chromedp.WaitVisible(replyTextAreaInput, chromedp.ByJSPath),
 		chromedp.SendKeys(replyTextAreaInput, message, chromedp.ByJSPath),
 		chromedp.SendKeys(uploadElement, fileToUpload, chromedp.ByJSPath),
+		chromedp.Sleep(time.Second * 3),
 		chromedp.Click(replyButton, chromedp.ByJSPath),
 		chromedp.Sleep(time.Second * 3),
 	}
