@@ -33,7 +33,7 @@ func TweetScreenShot(username string, tweetId string) (string, error) {
 	return fname, nil
 }
 
-func TweetSendReply(userScreenName, tweetID, message string) error {
+func TweetSendReply(userScreenName, tweetID, message, fileToUpload string) error {
 	opts := append(
 		chromedp.DefaultExecAllocatorOptions[:],
 		chromedp.Flag("headless", true),
@@ -48,7 +48,7 @@ func TweetSendReply(userScreenName, tweetID, message string) error {
 	defer cancelCtxt()
 
 	var buf []byte
-	if err := chromedp.Run(chromedpContext, replyToTweet(userScreenName, tweetID, message, &buf)); err != nil {
+	if err := chromedp.Run(chromedpContext, replyToTweet(userScreenName, tweetID, message, fileToUpload, &buf)); err != nil {
 		return err
 	}
 	return nil
@@ -63,14 +63,16 @@ func elementScreenshot(urlstr, sel string, res *[]byte) chromedp.Tasks {
 	}
 }
 
-func replyToTweet(userScreen, tweetId, message string, res *[]byte) chromedp.Tasks {
+func replyToTweet(userScreen, tweetId, message, fileToUpload string, res *[]byte) chromedp.Tasks {
 	replyIcon := "document.querySelector('[aria-label=\"Reply\"]')"
 	replyTextAreaInput := "document.querySelector(\"#react-root > div > div > div > main > div > div > div.css-1dbjc4n.r-16y2uox.r-1jgb5lz.r-13qz1uu > div > div:nth-child(2) > div > div > div > div.css-1dbjc4n.r-1iusvr4.r-46vdb2.r-hxarbt.r-9cviqr.r-bcqeeo.r-1bylmt5.r-13tjlyg.r-7qyjyx.r-1ftll1t > div.css-1dbjc4n.r-184en5c > div > div > div > div > div > div > div > div > div.css-901oao.r-hkyrab.r-6koalj.r-16y2uox.r-1qd0xha.r-1i10wst.r-16dba41.r-ad9z0x.r-bcqeeo.r-qvutc0 > textarea\")"
 	replyButton := "document.querySelector(\"#react-root > div > div > div.css-1dbjc4n.r-1pi2tsx.r-13qz1uu.r-417010 > main > div > div > div.css-1dbjc4n.r-ahm1il.r-136ojw6 > div > div > div > div.css-1dbjc4n.r-obd0qt.r-1pz39u2.r-1777fci.r-1uvorsx.r-174vidy.r-18bj3io > div\")"
-
+	uploadElement := "document.querySelector(\"#react-root > div > div > div.css-1dbjc4n.r-1pi2tsx.r-13qz1uu.r-417010 > main > div > div > div.css-1dbjc4n.r-16y2uox.r-1jgb5lz.r-13qz1uu > div > div:nth-child(2) > div > div > div > div.css-1dbjc4n.r-1iusvr4.r-46vdb2.r-hxarbt.r-9cviqr.r-bcqeeo.r-1bylmt5.r-13tjlyg.r-7qyjyx.r-1ftll1t > div:nth-child(2) > div > div > div:nth-child(1) > input\")"
 	_ = replyIcon
 	_ = replyTextAreaInput
 	_ = replyButton
+	_ = uploadElement
+
 	logAndPrint("perpare actions")
 	replyTweetActions := []chromedp.Action{
 		chromedp.Navigate(fmt.Sprintf("https://mobile.twitter.com/%s/status/%s", userScreen, tweetId)),
@@ -79,6 +81,7 @@ func replyToTweet(userScreen, tweetId, message string, res *[]byte) chromedp.Tas
 		chromedp.Click(replyIcon, chromedp.ByJSPath),
 		chromedp.WaitVisible(replyTextAreaInput, chromedp.ByJSPath),
 		chromedp.SendKeys(replyTextAreaInput, message, chromedp.ByJSPath),
+		chromedp.SendKeys(uploadElement, fileToUpload, chromedp.ByJSPath),
 		chromedp.Click(replyButton, chromedp.ByJSPath),
 		chromedp.Sleep(time.Second * 3),
 	}

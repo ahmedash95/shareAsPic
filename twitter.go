@@ -81,11 +81,11 @@ func makeTweetPicAndShare(tweet twitter.Tweet) {
 
 	logAndPrint(fmt.Sprintf("replying to %s (%s) for reply to %s/status/%s", tweet.User.ScreenName, tweet.IDStr, tweet.InReplyToScreenName, tweet.InReplyToStatusIDStr))
 
-	filename = fmt.Sprintf("%s%s", PIC_STORAGE_URL, filename)
+	filename = fmt.Sprintf("%s%s", PIC_STORAGE_PATH, filename)
 
-	replyMessage := fmt.Sprintf("Hello @%s , Here you are %s", tweet.User.ScreenName, filename)
+	replyMessage := fmt.Sprintf("Hello @%s , here u are", tweet.User.ScreenName)
 
-	err2 := TweetSendReply(tweet.User.ScreenName, tweet.IDStr, replyMessage)
+	err2 := TweetSendReply(tweet.User.ScreenName, tweet.IDStr, replyMessage, filename)
 	if err2 != nil {
 		logAndPrint(fmt.Sprintf("Faild to reply with a screenshot: %s", err2.Error()))
 	}
