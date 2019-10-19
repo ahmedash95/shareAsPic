@@ -3,14 +3,25 @@ package main
 import (
 	"fmt"
 	"log"
+	"math/rand"
 	"net/http"
 	"strings"
+	"time"
 
 	"github.com/dghubble/go-twitter/twitter"
 	"github.com/dghubble/oauth1"
 )
 
 const ProcessedTweets = "processed_tweets"
+
+var RepliesSet = []string{
+	"مساء الخير يا %s اتفضل يا زعيم",
+	"انت تؤمر يا %s",
+	"طلباتك اوامر يا  %s",
+	"لو عجبتك يا %s اعمل فولو بقي",
+	"اتفضل يا %s و ادعيلنا دعوتين حلوين",
+	"ازيك يا %s اتفضل خلصتهالك",
+}
 
 var client *twitter.Client
 var httpClient *http.Client
@@ -80,7 +91,10 @@ func makeTweetPicAndShare(tweet twitter.Tweet) {
 		TweetMode:          "",
 	}
 
-	_, _, err2 := client.Statuses.Update(fmt.Sprintf("Hello @%s , Here u are", tweet.User.ScreenName), statusUpdate)
+	rand.Seed(time.Now().Unix())
+	n := rand.Int() % len(RepliesSet)
+
+	_, _, err2 := client.Statuses.Update(fmt.Sprintf(RepliesSet[n], tweet.User.ScreenName), statusUpdate)
 	if err2 != nil {
 		logAndPrint(fmt.Sprintf("Faild to reply pic tweet, %s", err2.Error()))
 	}
