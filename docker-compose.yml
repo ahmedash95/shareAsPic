@@ -2,23 +2,18 @@ version: '3'
 
 services:
   web_api:
-    build:
-      context: .
-      dockerfile: Dockerfile
+    build: .
     command: /bin/bash -c "go run *.go"
     restart: always
     volumes:
-      - ./:/go/src/github.com/ahmedash95/shareAsPic
+      - .:/app
     ports:
       - "8080:8080"
     depends_on:
       - redis
-
   redis:
-    image: redis
+    image: redis:5.0
     restart: always
-    logging:
-            driver: none 
     volumes:
       - ./redis-data:/data
     ports:
