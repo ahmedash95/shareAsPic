@@ -3,6 +3,7 @@ package main
 import (
 	"fmt"
 	"log"
+	"net/http"
 	"strings"
 
 	"github.com/dghubble/go-twitter/twitter"
@@ -12,12 +13,15 @@ import (
 const ProcessedTweets = "processed_tweets"
 
 var client *twitter.Client
+var httpClient *http.Client
+var TwitterUploadClient *TwitterUpload
 
 func initTwitterClient() {
 	config := oauth1.NewConfig(TWITTER_API_KEY, TWITTER_API_SECRET)
 	token := oauth1.NewToken(TWITTER_ACCESS_TOKEN_KEY, TWITTER_ACCESS_TOKEN_SECRET)
-	httpClient := config.Client(oauth1.NoContext, token)
+	httpClient = config.Client(oauth1.NoContext, token)
 	client = twitter.NewClient(httpClient)
+	TwitterUploadClient = NewTwitterUpload(httpClient)
 }
 
 func processTweet(tweet twitter.Tweet) {
@@ -81,13 +85,28 @@ func makeTweetPicAndShare(tweet twitter.Tweet) {
 
 	logAndPrint(fmt.Sprintf("replying to %s (%s) for reply to %s/status/%s", tweet.User.ScreenName, tweet.IDStr, tweet.InReplyToScreenName, tweet.InReplyToStatusIDStr))
 
-	filename = fmt.Sprintf("%s%s", PIC_STORAGE_PATH, filename)
+	filePath := fmt.Sprintf("%s%s", PIC_STORAGE_PATH, filename)
 
-	replyMessage := fmt.Sprintf("Hello @%s , here u are", tweet.User.ScreenName)
+	logAndPrint("upload photo")
+	mediaId,err := TwitterUploadClient.Upload(filePath)
+	logAndPrint(fmt.Sprintf("photo has been uploaded: %d",mediaId))
 
-	err2 := TweetSendReply(tweet.User.ScreenName, tweet.IDStr, replyMessage, filename)
+	statusUpdate := &twitter.StatusUpdateParams{
+		Status:             "",
+		InReplyToStatusID:  tweet.ID,
+		PossiblySensitive:  nil,
+		Lat:                nil,
+		Long:               nil,
+		PlaceID:            "",
+		DisplayCoordinates: nil,
+		TrimUser:           nil,
+		MediaIds:           []int64{mediaId},
+		TweetMode:          "",
+	}
+
+	_, _, err2 := client.Statuses.Update(fmt.Sprintf("Hello @%s , Here u are", tweet.User.ScreenName), statusUpdate)
 	if err2 != nil {
-		logAndPrint(fmt.Sprintf("Faild to reply with a screenshot: %s", err2.Error()))
+		logAndPrint(fmt.Sprintf("Faild to reply pic tweet, %s", err2.Error()))
 	}
 
 	logAndPrint(fmt.Sprintf("replied With screenshot for: %s\n", tweet.IDStr))
