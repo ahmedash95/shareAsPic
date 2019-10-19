@@ -6,6 +6,7 @@ services:
       context: .
       dockerfile: Dockerfile
     command: /bin/bash -c "go run *.go"
+    restart: always
     volumes:
       - ./:/go/src/github.com/ahmedash95/shareAsPic
     ports:
@@ -15,6 +16,7 @@ services:
 
   redis:
     image: redis
+    restart: always
     logging:
             driver: none 
     volumes:
