@@ -16,7 +16,7 @@ RUN apt install fonts-indic fonts-noto fonts-noto-cjk -y
 RUN echo GOPATH
 RUN mkdir -p $GOPATH/src/app
  
-WORKDIR $GOPATH/src/app
+WORKDIR /app
 
 COPY . .
 
