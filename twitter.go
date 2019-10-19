@@ -12,9 +12,9 @@ import (
 	"github.com/dghubble/oauth1"
 )
 
-const ProcessedTweets = "processed_tweets"
+const processedTweets = "processed_tweets"
 
-var RepliesSet = []string{
+var repliesSet = []string{
 	"مساء الخير يا @%s اتفضل يا زعيم",
 	"انت تؤمر يا @%s",
 	"طلباتك اوامر يا  @%s",
@@ -25,14 +25,14 @@ var RepliesSet = []string{
 
 var client *twitter.Client
 var httpClient *http.Client
-var TwitterUploadClient *TwitterUpload
+var twitterUploadClient *TwitterUpload
 
 func initTwitterClient() {
-	config := oauth1.NewConfig(TWITTER_API_KEY, TWITTER_API_SECRET)
-	token := oauth1.NewToken(TWITTER_ACCESS_TOKEN_KEY, TWITTER_ACCESS_TOKEN_SECRET)
+	config := oauth1.NewConfig(twitterAPIKey, twitterAPISECRET)
+	token := oauth1.NewToken(twitterAccessTokenKey, twitterAccessTokenSecret)
 	httpClient = config.Client(oauth1.NoContext, token)
 	client = twitter.NewClient(httpClient)
-	TwitterUploadClient = NewTwitterUpload(httpClient)
+	twitterUploadClient = NewTwitterUpload(httpClient)
 }
 
 func processTweet(tweet twitter.Tweet) {
@@ -49,7 +49,7 @@ func processTweet(tweet twitter.Tweet) {
 }
 
 func tweetProcessedBefore(tweet twitter.Tweet) bool {
-	result, _ := redisClient.SAdd(ProcessedTweets, tweet.ID).Result()
+	result, _ := redisClient.SAdd(processedTweets, tweet.ID).Result()
 	var processed bool
 	processed = result == 0
 	if !processed {
@@ -72,11 +72,11 @@ func makeTweetPicAndShare(tweet twitter.Tweet) {
 
 	logAndPrint(fmt.Sprintf("replying to %s (%s) for reply to %s/status/%s", tweet.User.ScreenName, tweet.IDStr, tweet.InReplyToScreenName, tweet.InReplyToStatusIDStr))
 
-	filePath := fmt.Sprintf("%s%s", PIC_STORAGE_PATH, filename)
+	filePath := fmt.Sprintf("%s%s", picStoragePath, filename)
 
 	logAndPrint("upload photo")
-	mediaId, err := TwitterUploadClient.Upload(filePath)
-	logAndPrint(fmt.Sprintf("photo has been uploaded: %d", mediaId))
+	mediaID, err := twitterUploadClient.Upload(filePath)
+	logAndPrint(fmt.Sprintf("photo has been uploaded: %d", mediaID))
 
 	statusUpdate := &twitter.StatusUpdateParams{
 		Status:             "",
@@ -87,14 +87,14 @@ func makeTweetPicAndShare(tweet twitter.Tweet) {
 		PlaceID:            "",
 		DisplayCoordinates: nil,
 		TrimUser:           nil,
-		MediaIds:           []int64{mediaId},
+		MediaIds:           []int64{mediaID},
 		TweetMode:          "",
 	}
 
 	rand.Seed(time.Now().Unix())
-	n := rand.Int() % len(RepliesSet)
+	n := rand.Int() % len(repliesSet)
 
-	_, _, err2 := client.Statuses.Update(fmt.Sprintf(RepliesSet[n], tweet.User.ScreenName), statusUpdate)
+	_, _, err2 := client.Statuses.Update(fmt.Sprintf(repliesSet[n], tweet.User.ScreenName), statusUpdate)
 	if err2 != nil {
 		logAndPrint(fmt.Sprintf("Faild to reply pic tweet, %s", err2.Error()))
 	}

@@ -8,11 +8,11 @@ import (
 	"github.com/joho/godotenv"
 )
 
-var TWITTER_API_KEY = ""
-var TWITTER_API_SECRET = ""
-var TWITTER_ACCESS_TOKEN_KEY = ""
-var TWITTER_ACCESS_TOKEN_SECRET = ""
-var PIC_STORAGE_PATH = ""
+var twitterAPIKey = ""
+var twitterAPISECRET = ""
+var twitterAccessTokenKey = ""
+var twitterAccessTokenSecret = ""
+var picStoragePath = ""
 
 func main() {
 	err := godotenv.Load()
@@ -20,11 +20,11 @@ func main() {
 		log.Fatal("Error loading .env file")
 	}
 
-	TWITTER_API_KEY = os.Getenv("TWITTER_API_KEY")
-	TWITTER_API_SECRET = os.Getenv("TWITTER_API_SECRET")
-	TWITTER_ACCESS_TOKEN_KEY = os.Getenv("TWITTER_ACCESS_TOKEN_KEY")
-	TWITTER_ACCESS_TOKEN_SECRET = os.Getenv("TWITTER_ACCESS_TOKEN_SECRET")
-	PIC_STORAGE_PATH = os.Getenv("PIC_STORAGE_PATH")
+	twitterAPIKey = os.Getenv("TWITTER_API_KEY")
+	twitterAPISECRET = os.Getenv("TWITTER_API_SECRET")
+	twitterAccessTokenKey = os.Getenv("TWITTER_ACCESS_TOKEN_KEY")
+	twitterAccessTokenSecret = os.Getenv("TWITTER_ACCESS_TOKEN_SECRET")
+	picStoragePath = os.Getenv("PIC_STORAGE_PATH")
 
 	// initialize logger
 	initLogger()

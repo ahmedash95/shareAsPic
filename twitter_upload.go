@@ -1,69 +1,77 @@
 package main
 
 import (
-	"io/ioutil"
-	"fmt"
-	"net/http"
-	"encoding/json"
 	"bytes"
+	"encoding/json"
+	"fmt"
+	"io/ioutil"
 	"mime/multipart"
+	"net/http"
 	"net/url"
 	"strings"
 )
 
+// MediaUpload URI
 const MediaUpload string = "https://upload.twitter.com/1.1/media/upload.json"
 
+// TwitterUpload http client
 type TwitterUpload struct {
 	client *http.Client
 }
 
+// MediaInitResponse properties
 type MediaInitResponse struct {
-	MediaId int64 `json:"media_id"`
-	MediaIdString string `json:"media_id_string"`
+	MediaID          int64  `json:"media_id"`
+	MediaIDString    string `json:"media_id_string"`
 	ExpiresAfterSecs uint64 `json:"expires_after_secs"`
 }
 
+// NewTwitterUpload uploads new screenshots
 func NewTwitterUpload(client *http.Client) *TwitterUpload {
 	self := &TwitterUpload{}
 	self.client = client
 	return self
 }
 
-func (self *TwitterUpload) Upload(path string) (int64,error) {
+// Upload function, it uploads tweet screenshot in a reply on twitter
+func (twitterUploader *TwitterUpload) Upload(path string) (int64, error) {
 	media, err := ioutil.ReadFile(path)
 	if err != nil {
 		return 0, err
 	}
 
-	mediaInitResponse, err := self.MediaInit(media)
+	mediaInitResponse, err := twitterUploader.mediaInit(media)
 	if err != nil {
 		return 0, err
 	}
 
-	mediaId := mediaInitResponse.MediaId
+	mediaID := mediaInitResponse.MediaID
 
-	if self.MediaAppend(mediaId, media,path) != nil {
+	if twitterUploader.mediaAppend(mediaID, media, path) != nil {
 		return 0, err
 	}
 
-	if self.MediaFinilize(mediaId) != nil {
+	if twitterUploader.mediaFinilize(mediaID) != nil {
 		return 0, err
 	}
 
-	return mediaId,nil
+	return mediaID, nil
 }
 
-func (self *TwitterUpload) MediaInit(media []byte) (*MediaInitResponse, error) {
+func (twitterUploader *TwitterUpload) mediaInit(media []byte) (*MediaInitResponse, error) {
 	form := url.Values{}
 	form.Add("command", "INIT")
 	form.Add("media_type", "image/png")
 	form.Add("total_bytes", fmt.Sprint(len(media)))
 
-
 	req, err := http.NewRequest("POST", MediaUpload, strings.NewReader(form.Encode()))
 	req.Header.Add("Content-Type", "application/x-www-form-urlencoded")
 
-	res, err := self.client.Do(req)
+	res, err := twitterUploader.client.Do(req)
+
+	if err != nil {
+		return nil, err
+	}
 
 	defer res.Body.Close()
 	body, err := ioutil.ReadAll(res.Body)
@@ -75,13 +83,12 @@ func (self *TwitterUpload) MediaInit(media []byte) (*MediaInitResponse, error) {
 		return nil, err
 	}
 
-
 	return &mediaInitResponse, nil
 }
 
-func (self *TwitterUpload) MediaAppend(mediaId int64, media []byte,path string) error {
+func (twitterUploader *TwitterUpload) mediaAppend(mediaID int64, media []byte, path string) error {
 	step := 500 * 1024
-	for s := 0; s * step < len(media); s++ {
+	for s := 0; s*step < len(media); s++ {
 		var body bytes.Buffer
 		rangeBegining := s * step
 		rangeEnd := (s + 1) * step
@@ -89,18 +96,15 @@ func (self *TwitterUpload) MediaAppend(mediaId int64, media []byte,path string) 
 			rangeEnd = len(media)
 		}
 
-
 		w := multipart.NewWriter(&body)
 
 		w.WriteField("command", "APPEND")
-		w.WriteField("media_id", fmt.Sprint(mediaId))
+		w.WriteField("media_id", fmt.Sprint(mediaID))
 		w.WriteField("segment_index", fmt.Sprint(s))
 
 		fw, err := w.CreateFormFile("media", path)
 
-
 		fw.Write(media[rangeBegining:rangeEnd])
-
 
 		w.Close()
 
@@ -108,7 +112,7 @@ func (self *TwitterUpload) MediaAppend(mediaId int64, media []byte,path string) 
 
 		req.Header.Add("Content-Type", w.FormDataContentType())
 
-		res, err := self.client.Do(req)
+		res, err := twitterUploader.client.Do(req)
 		if err != nil {
 			return err
 		}
@@ -120,14 +124,14 @@ func (self *TwitterUpload) MediaAppend(mediaId int64, media []byte,path string) 
 	return nil
 }
 
-func (self *TwitterUpload) MediaFinilize(mediaId int64) error {
+func (twitterUploader *TwitterUpload) mediaFinilize(mediaID int64) error {
 	form := url.Values{}
 	form.Add("command", "FINALIZE")
-	form.Add("media_id", fmt.Sprint(mediaId))
+	form.Add("media_id", fmt.Sprint(mediaID))
 
 	req, err := http.NewRequest("POST", MediaUpload, strings.NewReader(form.Encode()))
 	req.Header.Add("Content-Type", "application/x-www-form-urlencoded")
-	res, err := self.client.Do(req)
+	res, err := twitterUploader.client.Do(req)
 	if err != nil {
 		return err
 	}
