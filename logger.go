@@ -8,6 +8,7 @@ import (
 	"gopkg.in/natefinch/lumberjack.v2"
 )
 
+// Logger Instance
 var Logger *zap.Logger
 
 func initLogger() {

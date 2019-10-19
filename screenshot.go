@@ -9,21 +9,22 @@ import (
 	"github.com/chromedp/chromedp"
 )
 
-func TweetScreenShot(username string, tweetId string) (string, error) {
+// TweetScreenShot captures a screenshot of a tweet
+func TweetScreenShot(username string, tweetID string) (string, error) {
 
 	chromedpContext, cancelCtxt := chromedp.NewContext(context.Background()) // create new tab
 	defer cancelCtxt()
 
 	// capture screenShot of an element
-	fname := fmt.Sprintf("%s-%s.png", username, tweetId)
-	url := fmt.Sprintf("https://twitter.com/%s/status/%s", username, tweetId)
+	fname := fmt.Sprintf("%s-%s.png", username, tweetID)
+	url := fmt.Sprintf("https://twitter.com/%s/status/%s", username, tweetID)
 
 	var buf []byte
 	if err := chromedp.Run(chromedpContext, elementScreenshot(url, `document.querySelector("#permalink-overlay-dialog > div.PermalinkOverlay-content > div > div > div.permalink.light-inline-actions.stream-uncapped.original-permalink-page > div.permalink-inner.permalink-tweet-container > div")`, &buf)); err != nil {
 		return "", err
 	}
-	fmt.Printf("write pic to path %s\n", fmt.Sprintf("%s/%s", PIC_STORAGE_PATH, fname))
-	if err := ioutil.WriteFile(fmt.Sprintf("%s/%s", PIC_STORAGE_PATH, fname), buf, 0755); err != nil {
+	fmt.Printf("write pic to path %s\n", fmt.Sprintf("%s/%s", picStoragePath, fname))
+	if err := ioutil.WriteFile(fmt.Sprintf("%s/%s", picStoragePath, fname), buf, 0755); err != nil {
 		return "", err
 	}
 	return fname, nil
