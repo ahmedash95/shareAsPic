@@ -1,6 +1,6 @@
 # @ShareAsPic Twitter APP
 
-A simple app replies with a screenshot if a tweet if you mentioned it to share like `@ShareAsPic share this please` in 30 seconds max it will repy with a screen shot of a photo like below
+A simple app replies with a screenshot if a tweet if you mentioned it to share like `@ShareAsPic share this please` in 30 seconds max it will repy with a screenshot of a photo like below
 
 <img src="https://drive.google.com/uc?export=view&id=1Rbfinu7B4qBgY6e-8ZP9XJAZ1n8bnA5V" width="400px">
 
