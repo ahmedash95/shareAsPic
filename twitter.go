@@ -30,11 +30,7 @@ func processTweet(tweet twitter.Tweet) {
 		return
 	}
 	// let's make sure it has "share this" in the string
-	if !strings.Contains(strings.ToLower(tweet.Text), "@shareaspic") {
-		return
-	}
-	if !strings.Contains(strings.ToLower(tweet.Text), "share this") {
-		replyWithIDoNotUnderstand(tweet)
+	if !strings.Contains(strings.ToLower(tweet.Text), "@shareaspic") || !strings.Contains(strings.ToLower(tweet.Text), "share this") {
 		return
 	}
 
@@ -50,26 +46,6 @@ func tweetProcessedBefore(tweet twitter.Tweet) bool {
 	}
 
 	return processed
-}
-
-func replyWithIDoNotUnderstand(tweet twitter.Tweet) {
-	log.Printf("replyWithIDoNotUnderstand: %s\n", tweet.IDStr)
-	statusUpdate := &twitter.StatusUpdateParams{
-		Status:             "",
-		InReplyToStatusID:  tweet.ID,
-		PossiblySensitive:  nil,
-		Lat:                nil,
-		Long:               nil,
-		PlaceID:            "",
-		DisplayCoordinates: nil,
-		TrimUser:           nil,
-		MediaIds:           nil,
-		TweetMode:          "",
-	}
-	_, _, err := client.Statuses.Update(fmt.Sprintf("Hello @%s , Sorry but I do not understand your message!", tweet.User.ScreenName), statusUpdate)
-	if err != nil {
-		logAndPrint(fmt.Sprintf("faild to reply with do not understand message %s", err.Error()))
-	}
 }
 
 func makeTweetPicAndShare(tweet twitter.Tweet) {
@@ -88,8 +64,8 @@ func makeTweetPicAndShare(tweet twitter.Tweet) {
 	filePath := fmt.Sprintf("%s%s", PIC_STORAGE_PATH, filename)
 
 	logAndPrint("upload photo")
-	mediaId,err := TwitterUploadClient.Upload(filePath)
-	logAndPrint(fmt.Sprintf("photo has been uploaded: %d",mediaId))
+	mediaId, err := TwitterUploadClient.Upload(filePath)
+	logAndPrint(fmt.Sprintf("photo has been uploaded: %d", mediaId))
 
 	statusUpdate := &twitter.StatusUpdateParams{
 		Status:             "",
