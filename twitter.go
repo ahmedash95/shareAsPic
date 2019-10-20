@@ -21,6 +21,14 @@ var repliesSet = []string{
 	"لو عجبتك يا @%s اعمل فولو بقي",
 	"اتفضل يا @%s و ادعيلنا دعوتين حلوين",
 	"ازيك يا @%s اتفضل خلصتهالك",
+	"مرحبا @%s شاركها بسهوله الان",
+	"مرحبتين @%s اليك ما طلبت",
+	"هلا @%s بس تؤمر و احنا ننفذ",
+	"هلا @%s في خدمتك",
+	"Hey @%s , here you go",
+	"Hello @%s , screenshot is ready",
+	"Hi @%s , Now you can easily share",
+	"Dear @%s , Share now",
 }
 
 var client *twitter.Client
