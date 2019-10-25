@@ -53,14 +53,16 @@ func processTweet(tweet twitter.Tweet) {
 }
 
 func validMessage(tweetText string) bool {
+	tweetText = strings.ToLower(tweetText)
+
 	keywords := []string{"share", "screen shot", "screenshot", "shot", "picture", "tweet"}
 
-	if !strings.Contains(strings.ToLower(tweetText), "@shareaspic") {
+	if !strings.Contains(tweetText, "@shareaspic") {
 		return false
 	}
 
 	for i := 0; i < len(keywords); i++ {
-		if strings.Contains(strings.ToLower(tweetText), keywords[i]) {
+		if strings.Contains(tweetText, keywords[i]) {
 			return true
 		}
 	}
