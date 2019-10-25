@@ -4,7 +4,7 @@ import (
 	"log"
 	"os"
 
-	"github.com/dghubble/go-twitter/twitter"
+	"github.com/ahmedash95/go-twitter/twitter"
 	"github.com/joho/godotenv"
 )
 

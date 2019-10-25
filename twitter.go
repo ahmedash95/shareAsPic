@@ -8,7 +8,7 @@ import (
 	"strings"
 	"time"
 
-	"github.com/dghubble/go-twitter/twitter"
+	"github.com/ahmedash95/go-twitter/twitter"
 	"github.com/dghubble/oauth1"
 )
 
@@ -25,14 +25,12 @@ var repliesSet = []string{
 
 var client *twitter.Client
 var httpClient *http.Client
-var twitterUploadClient *TwitterUpload
 
 func initTwitterClient() {
 	config := oauth1.NewConfig(twitterAPIKey, twitterAPISECRET)
 	token := oauth1.NewToken(twitterAccessTokenKey, twitterAccessTokenSecret)
 	httpClient = config.Client(oauth1.NoContext, token)
 	client = twitter.NewClient(httpClient)
-	twitterUploadClient = NewTwitterUpload(httpClient)
 }
 
 func processTweet(tweet twitter.Tweet) {
@@ -63,7 +61,7 @@ func makeTweetPicAndShare(tweet twitter.Tweet) {
 	logAndPrint(fmt.Sprintf("prepare replyWithScreenShotFor: %s\n", tweet.IDStr))
 
 	logAndPrint("taking a screenshot")
-	filename, err := TweetScreenShot(tweet.InReplyToScreenName, tweet.InReplyToStatusIDStr)
+	screenshot, err := TweetScreenShot(tweet.InReplyToScreenName, tweet.InReplyToStatusIDStr)
 	if err != nil {
 		logAndPrint(fmt.Sprintf("Faild to take a screenshot of the tweet, %s", err.Error()))
 		return
@@ -72,11 +70,17 @@ func makeTweetPicAndShare(tweet twitter.Tweet) {
 
 	logAndPrint(fmt.Sprintf("replying to %s (%s) for reply to %s/status/%s", tweet.User.ScreenName, tweet.IDStr, tweet.InReplyToScreenName, tweet.InReplyToStatusIDStr))
 
-	filePath := fmt.Sprintf("%s%s", picStoragePath, filename)
-
 	logAndPrint("upload photo")
-	mediaID, err := twitterUploadClient.Upload(filePath)
-	logAndPrint(fmt.Sprintf("photo has been uploaded: %d", mediaID))
+	mediaUpload := &twitter.MediaUploadParams{
+		File:     screenshot,
+		MimeType: "image/png",
+	}
+
+	media, _, err := client.Media.Upload(mediaUpload)
+	if err != nil {
+		log.Fatal(err)
+	}
+	logAndPrint(fmt.Sprintf("photo has been uploaded: %d", media.MediaID))
 
 	statusUpdate := &twitter.StatusUpdateParams{
 		Status:             "",
@@ -87,7 +91,7 @@ func makeTweetPicAndShare(tweet twitter.Tweet) {
 		PlaceID:            "",
 		DisplayCoordinates: nil,
 		TrimUser:           nil,
-		MediaIds:           []int64{mediaID},
+		MediaIds:           []int64{media.MediaID},
 		TweetMode:          "",
 	}
 
