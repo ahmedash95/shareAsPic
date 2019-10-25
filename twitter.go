@@ -46,12 +46,25 @@ func processTweet(tweet twitter.Tweet) {
 		logAndPrint(fmt.Sprintf("Tweet proccessed before %s/status/%s", tweet.InReplyToScreenName, tweet.InReplyToStatusIDStr))
 		return
 	}
-	// let's make sure it has "share this" in the string
-	if !strings.Contains(strings.ToLower(tweet.Text), "@shareaspic") || !strings.Contains(strings.ToLower(tweet.Text), "share this") {
+	if !validMessage(tweet.Text) {
 		return
 	}
-
 	makeTweetPicAndShare(tweet)
+}
+
+func validMessage(tweetText string) bool {
+	keywords := []string{"share", "screen shot", "screenshot", "shot", "picture", "tweet"}
+
+	if !strings.Contains(strings.ToLower(tweetText), "@shareaspic") {
+		return false
+	}
+
+	for i := 0; i < len(keywords); i++ {
+		if strings.Contains(strings.ToLower(tweetText), keywords[i]) {
+			return true
+		}
+	}
+	return false
 }
 
 func tweetProcessedBefore(tweet twitter.Tweet) bool {
