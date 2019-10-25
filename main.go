@@ -12,7 +12,6 @@ var twitterAPIKey = ""
 var twitterAPISECRET = ""
 var twitterAccessTokenKey = ""
 var twitterAccessTokenSecret = ""
-var picStoragePath = ""
 
 func main() {
 	err := godotenv.Load()
@@ -24,7 +23,6 @@ func main() {
 	twitterAPISECRET = os.Getenv("TWITTER_API_SECRET")
 	twitterAccessTokenKey = os.Getenv("TWITTER_ACCESS_TOKEN_KEY")
 	twitterAccessTokenSecret = os.Getenv("TWITTER_ACCESS_TOKEN_SECRET")
-	picStoragePath = os.Getenv("PIC_STORAGE_PATH")
 
 	// initialize logger
 	initLogger()
